@@ -1,0 +1,25 @@
+{
+  "name": "mms-muslim-life",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --use-env-proxy --env-file-if-exists=.env server.js",
+    "start": "node --use-env-proxy --env-file-if-exists=.env server.js",
+    "build": "esbuild public/app.js --bundle --format=esm --minify --splitting --outdir=public/dist",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@zxing/browser": "^0.1.5",
+    "adhan": "^4.4.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "multer": "^2.0.2"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  },
+  "engines": {
+    "node": ">=24 <25"
+  }
+}

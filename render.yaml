@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: maltese-muslims-society
+    runtime: node
+    plan: starter
+    buildCommand: npm ci --include=dev --no-audit --no-fund && npm run build && npm test
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: '24'
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY_HOPS
+        value: '1'
+      - key: MMS_DATA_DIR
+        value: /var/data/mms
+      - key: ADMIN_PASSWORD
+        generateValue: true
+    disk:
+      name: mms-private-data
+      mountPath: /var/data
+      sizeGB: 1
