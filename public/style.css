@@ -7,3 +7,5 @@
 .business-logo{width:60px;height:60px;object-fit:contain;float:right}.listing-images{display:flex;gap:8px;overflow:auto;margin:15px 0}.listing-images img{height:120px;max-width:180px;object-fit:cover;border-radius:4px}
 
 pre{max-width:100%;overflow:auto;font-size:11px}
+
+.purpose-section{border-top:1px solid var(--line)}.purpose-card{margin-bottom:0;padding:32px;border-top:3px solid var(--gold)}.purpose-card h3{font-family:Georgia,serif;font-size:30px;line-height:1.25;margin:10px 0 20px}.purpose-card p{font-size:14px;color:var(--muted);max-width:480px}.purpose-card p:last-child{margin-bottom:0}
