@@ -10,11 +10,14 @@
     "test": "node --test"
   },
   "dependencies": {
+    "@netlify/blobs": "^11.1.9",
+    "@netlify/database": "^2.0.3",
     "@zxing/browser": "^0.1.5",
     "adhan": "^4.4.3",
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "serverless-http": "^4.0.0"
   },
   "devDependencies": {
     "esbuild": "^0.25.0"

@@ -34,7 +34,7 @@ Use HTTPS in deployment. Node's `--use-env-proxy` enables environment-provided o
 - Landing page, mobile navigation and floating assistant across pages.
 - Adhan library calculations for Valletta (35.8992, 14.5141), Europe/Malta display, monthly timetable, method and Asr convention selection, countdown and optional browser reminders while the prayer page remains open. Sunrise is shown but excluded from the next-prayer countdown. No API credential is required for calculations.
 - Mosque and business directories with locality/category filters and an interactive OpenStreetMap view. No invented locations, hours or certification records are seeded. Approved listings include directions and evidence metadata. Facilities remain blank unless supplied by reviewers.
-- Business, prayer-space and product-report submissions enter pending review. Documents are private, limited to three files of 5 MB, MIME/signature checked for PDF/JPEG/PNG and served as authenticated downloads. Files are never public static assets.
+- Business, prayer-space and product-report submissions enter pending review. Documents are private, limited to three files with a 4 MB combined browser limit, MIME/signature checked for PDF/JPEG/PNG and served as authenticated downloads. Files are never public static assets.
 - Administrator/reviewer sessions use random HttpOnly SameSite cookies, one-hour expiry, login rate limits and same-origin mutation checks. Administrators can publish sourced schedules and knowledge references; both roles can review submissions with an audit note. Rejection removes an existing public listing. Evidence-request decisions do not send email automatically.
 - Camera barcode recognition via ZXing (HTTPS or localhost and permission required), manual barcode entry, server-side Open Food Facts v2 lookup, ingredient concern explanations, database attribution and dates. Database-only results remain **Needs Further Verification**. Administrators can review product reports and publish product-specific evidence records for any of the four statuses. Verified Halal requires issuer, product-matched certificate reference and an unexpired expiry date; expired records fall back to database lookup. Database labels are not proof. The four evidence statuses are explained in the interface without simulating verified results.
 - Optional server-side OpenAI integration with a restricted introductory source set, scholarly referral instructions and English/Maltese/Arabic prompts. No API key is sent to the browser. MMS does not store conversations; each question is sent without earlier messages and `store:false`. Provider retention may apply. Model answers still require independent checking; a system prompt cannot guarantee religious accuracy.
@@ -60,16 +60,31 @@ This is a functional first implementation, not a production deployment. Supply a
 The JSON store supports a single server process. Securely back up `.data/` (contains private uploads and audit records). Before scaled production, use a transactional database, durable sessions, named-user identity/SSO, malware scanning, upload metadata stripping, a retention/deletion workflow and operational monitoring. Do not run multiple instances against the file store. No deployment, publication or Git push is performed automatically.
 
 
-## Publish on Render
+## Publish on Netlify
 
-`render.yaml` defines a Node 24 web service with a 1 GB persistent disk. **The Starter service and disk require paid Render hosting.** Review Render's current pricing before creating the service. The disk is required to retain submissions, documents and audit records across restarts/deployments; a free service with ephemeral storage is unsuitable for these features.
+Import `aishabenhalim02/website-` and select `main` as the production branch.
+`netlify.toml` builds and tests the site, publishes only `public/`, and bundles
+the API as a Netlify Function. Netlify Database provisions Postgres and applies
+the SQL migration during deployment. The function uses transactional updates
+for submissions, reviews and audit records. Uploads use private Netlify Blobs
+in the Frankfurt region. Production uploads survive redeploys. Preview uploads
+are scoped to each deploy.
 
-1. Connect your GitHub account in Render and create a **New Blueprint** from `aishabenhalim02/website-`, branch `main`. Render reads `render.yaml`.
-2. Review the Starter service and disk charges, then create the resources. Render installs dependencies, builds the browser code, runs tests and starts the server.
-3. Open the HTTPS `onrender.com` address shown by Render after its health check passes. This is the public website address. A custom domain is optional and can be added later in Render's service settings.
-4. In Render's Environment settings, retrieve the generated `ADMIN_PASSWORD` securely to sign in at `/#admin`. Do not paste it into chat or commit it. Add `OPENAI_API_KEY` only if you want AI answers, and optionally a separate `REVIEWER_PASSWORD`.
-5. Check the home page, `/#prayers`, `/#halal`, and `/healthz`. Submit a test application and verify it survives a service restart. Check live Open Food Facts lookup and camera access from a real phone over HTTPS.
+Netlify Functions accept up to 4 MB of documents per submission in this app
+(three PDF, PNG or JPEG files maximum). This leaves space for multipart fields
+and Netlify's binary encoding overhead.
 
-Render supplies `PORT`. `NODE_ENV=production` enables Secure admin cookies; `TRUST_PROXY_HOPS=1` trusts Render's reverse proxy for rate limiting. Private data lives at `/var/data/mms` on the attached disk. Keep a secure off-site backup and run a single service instance. The cloud development network allowlist is separate from Render networking. Creating an environment draft in Codex does not deploy a public website.
+Configure `ADMIN_PASSWORD` as a secret in Netlify's production Functions
+environment before using the review dashboard. Use a unique generated password
+of at least 16 characters. Optionally configure `REVIEWER_PASSWORD` separately,
+and set `OPENAI_API_KEY` to enable the AI assistant. Redeploy after changes.
+Open Food Facts lookup, barcode entry and calculated prayer times require no
+API credentials. Camera scanning requires HTTPS and browser permission.
 
-No Render resources are created simply by saving this file. Publication still requires your Render account connection and billing selection. Never send hosting passwords or API tokens in chat.
+GitHub does not contain the ignored local `.data/` directory. The first deploy
+starts with empty records. Existing offline records and files, if any, need
+a private import from the original server before they can appear on Netlify.
+
+Check `/healthz`, `/#prayers`, `/#halal`, and `/#admin` after deployment.
+Use a preview for synthetic approvals and test documents. No public fixtures
+or verified certifications are seeded.
